@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Google Searcher</title>
+  <style>
+    :root {
+      --bg-color: #121212;
+      --text-color: #f0f0f0;
+      --container-bg: #1e1e1e;
+      --input-bg: #2a2a2a;
+      --input-border: #555;
+      --button-bg: #8ab4f8;
+      --button-color: #000;
+      --status-color: #ccc;
+    }
+
+    .light-mode {
+      --bg-color: #f4f6f8;
+      --text-color: #333;
+      --container-bg: #ffffff;
+      --input-bg: #ffffff;
+      --input-border: #ccc;
+      --button-bg: #4285f4;
+      --button-color: #ffffff;
+      --status-color: #555;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background-color: var(--container-bg);
+      padding: 2rem 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      font-size: 1rem;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: 1px solid var(--input-border);
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      background-color: var(--input-bg);
+      color: var(--text-color);
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--button-bg);
+      outline: none;
+    }
+
+    button[type="submit"] {
+      background-color: var(--button-bg);
+      color: var(--button-color);
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button[type="submit"]:hover {
+      filter: brightness(0.95);
+    }
+
+    .status {
+      margin-top: 1.5rem;
+      font-size: 0.95rem;
+      color: var(--status-color);
+    }
+
+    /* Toggle switch fixed top-right */
+    .theme-toggle {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 1000;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 42px;
+      height: 22px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #555;
+      border-radius: 22px;
+      transition: 0.3s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+
+    input:checked + .slider {
+      background-color: #ccc;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+  </style>
+</head>
+<body class="dark-mode">
+  <!-- Toggle placed in window corner -->
+  <div class="theme-toggle">
+    <label class="switch">
+      <input type="checkbox" id="themeSwitch" />
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="container">
+    <h1>Google Searcher</h1>
+    <form action="{{ url_for('search') }}" method="post">
+      <label for="query">Enter Google Search Query:</label>
+      <input type="text" id="query" name="query" placeholder="e.g., site:example.com" required>
+      <button type="submit">Start Search</button>
+    </form>
+
+    {% if request.args.get('status') %}
+      <div class="status">{{ request.args.get('status') }}</div>
+    {% endif %}
+  </div>
+
+  <script>
+    const themeToggle = document.getElementById('themeSwitch');
+    const body = document.body;
+
+    body.classList.remove('light-mode'); // Default to dark
+
+    themeToggle.addEventListener('change', () => {
+      body.classList.toggle('light-mode');
+    });
+  </script>
+</body>
+</html>

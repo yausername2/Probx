@@ -16,6 +16,8 @@ Probx consists of several services:
 - **MongoDB**: Stores crawled data, search results, and handler configurations.
 - **RabbitMQ**: Message broker for decoupling and distributing tasks.
 - **Mongo Express**: Web-based MongoDB admin interface.
+- **Mitmproxy (Optional)**: Intercepts and inspects HTTP(S) traffic for analysis and debugging within the pipeline.
+
 
 All services are containerized and orchestrated via Docker Compose.
 

@@ -1,0 +1,125 @@
+services:
+  searcher:
+    build: ./searcher
+    container_name: searcher
+    ports:
+      - "5000:5000"  # Expose port for the web panel
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      mitmproxy:
+        condition: service_started
+    env_file:
+      - ./searcher/searcher.env
+    environment:
+      - PROXY_HOST=mitmproxy
+      - PROXY_PORT=8080
+    networks:
+      - app-network
+
+  crawler:
+    build: ./crawler
+    container_name: crawler
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      mitmproxy:
+        condition: service_started
+    env_file:
+      - ./crawler/crawler.env
+    environment:
+      - PROXY_HOST=mitmproxy
+      - PROXY_PORT=8080
+    networks:
+      - app-network
+
+  dispatcher:
+    build: ./dispatcher
+    container_name: dispatcher
+    ports:
+      - "5001:5001"  # Expose port for the web configuration panel
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      mitmproxy:
+        condition: service_started
+    env_file:
+      - ./dispatcher/dispatcher.env
+    environment:
+      - PROXY_HOST=mitmproxy
+      - PROXY_PORT=8080
+    networks:
+      - app-network
+
+  rabbitmq:
+    image: "rabbitmq:management"
+    container_name: rabbitmq
+    ports:
+      - "15672:15672"  # RabbitMQ Management UI (Web UI)
+      - "5672:5672"    # RabbitMQ main port
+    env_file:
+      - ./rabbitmq.env
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "is_running"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  mitmproxy:
+    image: mitmproxy/mitmproxy
+    container_name: mitmproxy
+    ports:
+      - "8082:8081"      # Web UI
+    command: mitmweb --web-host 0.0.0.0 --set web_password=admin
+    volumes:
+      - mitmproxy-data:/home/mitmproxy/.mitmproxy
+    networks:
+      - app-network
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    env_file:
+      - ./mongo.env
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    ports:
+      - "8081:8081"
+    env_file:
+      - ./mongo-express.env
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - app-network
+
+volumes:
+  mongo-data:
+  mitmproxy-data:
+
+networks:
+  app-network:
+    driver: bridge

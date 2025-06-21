@@ -17,6 +17,7 @@ Probx consists of several services:
 - **RabbitMQ**: Message broker for decoupling and distributing tasks.
 - **Mongo Express**: Web-based MongoDB admin interface.
 - **Mitmproxy (Optional)**: Intercepts and inspects HTTP(S) traffic for analysis and debugging within the pipeline.
+- **Caido (Optional)**: Advanced traffic inspection, manipulation, and automation capabilities, making it suitable for in-depth security analysis and workflow customization.
 
 
 All services are containerized and orchestrated via Docker Compose.

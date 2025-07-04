@@ -10,7 +10,8 @@
 
 Probx consists of several services:
 
-- **Searcher**: Web UI for submitting Google search queries. Uses `yagooglesearch` to find URLs, stores results in MongoDB, and pushes new URLs to RabbitMQ.
+- **Searchers**:
+    - **Searcher**: Web UI for submitting Google search queries. Uses `yagooglesearch` to find URLs, stores results in MongoDB, and pushes new URLs to RabbitMQ.
 - **Crawler**: Consumes URLs from RabbitMQ, crawls web pages, extracts links, stores them in MongoDB, and publishes discovered links for further processing.
 - **Dispatcher**: Manages routing of crawled links to service-specific queues based on regex rules. Includes a web UI for handler management and triggering backfills.
 - **MongoDB**: Stores crawled data, search results, and handler configurations.
